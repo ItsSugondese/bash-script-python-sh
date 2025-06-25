@@ -52,6 +52,7 @@ class EmojiPopup(Gtk.Window):
         self.focus_out_timer_id = None
         self.connect("focus-in-event", self.on_focus_in)
         self.connect("focus-out-event", self.on_focus_out)
+        self.connect("key-press-event", self.on_key_press)
 
         
         # Position window where the cursor is
@@ -114,8 +115,12 @@ class EmojiPopup(Gtk.Window):
     def on_focus_out(self, widget, event): 
         if not self.ignore_focus:
             Gtk.main_quit()
-            
 
+    def on_key_press(self, widget, event):
+        if event.keyval == Gdk.KEY_Escape:
+            Gtk.main_quit()
+            return True  # Stop further event propagation
+        return False
 
     def quit_after_timeout(self):           
             Gtk.main_quit()  # Exit entire app after 2 seconds
