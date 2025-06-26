@@ -65,6 +65,9 @@ class EmojiPopup(Gtk.Window):
                 button.get_child().set_markup(f"<span font='15'>{emoji}</span>")
                 button.connect("clicked", self.on_emoji_clicked, emoji)
 
+                button.connect("focus-in-event", self.on_button_focus, emoji)
+
+
                 row = index // 5  # integer division to get the row
                 col = index % 5   # modulus to get the column
 
@@ -82,23 +85,17 @@ class EmojiPopup(Gtk.Window):
 
             self.connect("destroy", Gtk.main_quit)
 
-    def on_emoji_clicked(self, widget, emoji):
+    def on_emoji_clicked(self, widget, emoji, keyval=None):
         self.ignore_focus = True  # Temporarily ignore focus out
+        logging.error(f" {keyval} is val.")
 
-        # Switch to previous window via Alt+Tab
-        subprocess.run(["xdotool", "key", "alt+Tab"])
+        # Determine how many times to type the emoji
+        repeat = 1
+        if keyval is not None:
+            key_unicode = Gdk.keyval_name(keyval)
+            if key_unicode and key_unicode.isdigit():
+                repeat = int(key_unicode)
 
-        # Wait a moment for focus to change
-        time.sleep(0.2)
-
-        # Now send the emoji (using unicode input or direct typing)
-        # Here is unicode input example:
-        unicode_code = ''.join(f"{ord(c):x}" for c in emoji)
-        subprocess.run(["xdotool", "key", "ctrl+shift+u"])
-        subprocess.run(["xdotool", "type", unicode_code])
-        subprocess.run(["xdotool", "key", "Return"])
-
-        subprocess.run(["xdotool", "key", "alt+Tab"])
         try:
             with open(self.emoji_path, "r", encoding="utf-8") as f:
                 emojis = [line.strip() for line in f if line.strip()]
@@ -113,6 +110,27 @@ class EmojiPopup(Gtk.Window):
         except Exception as e:
             logging.error(f"Error updating emoji file: {e}")
 
+        # Switch to previous window via Alt+Tab
+        subprocess.run(["xdotool", "key", "alt+Tab"])
+        time.sleep(0.2)
+
+        # Send the emoji via unicode input, repeated as needed
+        for _ in range(repeat):
+            unicode_code = ''.join(f"{ord(c):x}" for c in emoji)
+            subprocess.run(["xdotool", "key", "ctrl+shift+u"])
+            subprocess.run(["xdotool", "type", unicode_code])
+            subprocess.run(["xdotool", "key", "Return"])
+            time.sleep(0.2)
+
+        Gtk.main_quit()  # Exit entire app after 2 seconds
+        
+
+        # Move selected emoji to top in file
+
+
+    def on_button_focus(self, widget, event, emoji):
+        self.focused_emoji = emoji
+
 
     def on_focus_in(self, widget, event):
         self.ignore_focus = False
@@ -122,10 +140,21 @@ class EmojiPopup(Gtk.Window):
             Gtk.main_quit()
 
     def on_key_press(self, widget, event):
-        if event.keyval == Gdk.KEY_Escape:
-            Gtk.main_quit()
-            return True  # Stop further event propagation
+        keyval = event.keyval
+
+        if keyval == Gdk.KEY_Escape:
+            self.hide()
+            return True
+
+        if Gdk.KEY_1 <= keyval <= Gdk.KEY_9:
+            count = keyval - Gdk.KEY_0  # Or just int(Gdk.keyval_name(keyval))
+            if hasattr(self, "focused_emoji"):
+                emoji = self.focused_emoji
+                self.on_emoji_clicked(None, emoji, keyval)
+                return True
+
         return False
+
 
     def quit_after_timeout(self):           
             Gtk.main_quit()  # Exit entire app after 2 seconds

@@ -1,1 +1,28 @@
 2025-06-26 08:58:01,667 - ERROR - Error updating emoji file: [Errno 2] No such file or directory: 'emojis.txt'
+2025-06-26 12:15:30,107 - ERROR -  50 is val.
+2025-06-26 12:15:30,109 - ERROR - Error updating emoji file: unsupported operand type(s) for +: 'EmojiPopup' and 'str'
+2025-06-26 12:15:30,538 - ERROR -  65513 is val.
+2025-06-26 12:15:30,539 - ERROR - Error updating emoji file: unsupported operand type(s) for +: 'EmojiPopup' and 'str'
+2025-06-26 12:15:37,127 - ERROR -  65507 is val.
+2025-06-26 12:15:37,128 - ERROR - Error updating emoji file: unsupported operand type(s) for +: 'EmojiPopup' and 'str'
+2025-06-26 12:15:37,365 - ERROR -  65513 is val.
+2025-06-26 12:15:37,365 - ERROR - Error updating emoji file: unsupported operand type(s) for +: 'EmojiPopup' and 'str'
+2025-06-26 12:26:45,263 - ERROR -  None is val.
+2025-06-26 12:27:39,142 - ERROR -  None is val.
+2025-06-26 12:27:45,632 - ERROR -  None is val.
+2025-06-26 12:27:50,773 - ERROR -  None is val.
+2025-06-26 12:30:19,164 - ERROR -  None is val.
+2025-06-26 12:30:19,607 - ERROR -  None is val.
+2025-06-26 12:30:50,306 - ERROR -  50 is val.
+2025-06-26 12:30:50,841 - ERROR -  50 is val.
+2025-06-26 12:30:59,116 - ERROR -  53 is val.
+2025-06-26 12:31:00,135 - ERROR -  53 is val.
+2025-06-26 12:31:01,102 - ERROR -  53 is val.
+2025-06-26 12:31:02,162 - ERROR -  53 is val.
+2025-06-26 12:31:03,080 - ERROR -  53 is val.
+2025-06-26 12:31:34,325 - ERROR -  53 is val.
+2025-06-26 12:32:02,796 - ERROR -  53 is val.
+2025-06-26 12:32:39,209 - ERROR -  51 is val.
+2025-06-26 12:32:50,320 - ERROR -  51 is val.
+2025-06-26 12:32:56,606 - ERROR -  None is val.
+2025-06-26 12:33:03,297 - ERROR -  57 is val.
