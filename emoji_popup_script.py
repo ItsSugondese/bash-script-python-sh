@@ -3,10 +3,18 @@ gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk
 import subprocess
 import time
+import logging
+
+logging.basicConfig(
+    filename="/home/lazybot/Desktop/bash/emoji_error.log",
+    level=logging.ERROR,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 
 class EmojiPopup(Gtk.Window):
+    
     def __init__(self):
         super().__init__(title="Select an Emoji")
         self.set_border_width(10)
@@ -26,28 +34,7 @@ class EmojiPopup(Gtk.Window):
             style_provider,
             Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
         )
-        self.emojis = [
-    "😭",
-    "🤭",
-    "🥳",
-    "🥴",
-    "🫡",
-    "🗿",
-    "😤",
-    "🤦",
-    "😎",
-    "😏",
-    "🤔",
-    "🤭",
-    "😔",
-    "🥰",
-    "😗",  # corrected from !F617 to 😗
-    "😒",
-    "🔥",
-    "🤓",
-    "🤡",
-    "😠",
-]
+
 
         self.focus_out_timer_id = None
         self.connect("focus-in-event", self.on_focus_in)
@@ -58,36 +45,42 @@ class EmojiPopup(Gtk.Window):
         # Position window where the cursor is
         self.move_to_cursor()
 
-        box = Gtk.Box(spacing=10)
-        self.add(box)
+        self.emoji_path = "/home/lazybot/Desktop/bash/emojis.txt"
+        with open(self.emoji_path, "r", encoding="utf-8") as f:
+        
+            self.emojis = [line.strip() for line in f if line.strip()]
 
-        grid = Gtk.Grid()
-        grid.set_row_spacing(5)
-        grid.set_column_spacing(5)
 
-        first_button = None
-        for index, emoji in enumerate(self.emojis):
-            button = Gtk.Button(label=emoji)
-            button.set_size_request(20, 20)
-            button.get_child().set_markup(f"<span font='15'>{emoji}</span>")
-            button.connect("clicked", self.on_emoji_clicked, emoji)
+            box = Gtk.Box(spacing=10)
+            self.add(box)
 
-            row = index // 5  # integer division to get the row
-            col = index % 5   # modulus to get the column
+            grid = Gtk.Grid()
+            grid.set_row_spacing(5)
+            grid.set_column_spacing(5)
 
-            grid.attach(button, col, row, 1, 1)
+            first_button = None
+            for index, emoji in enumerate(self.emojis):
+                button = Gtk.Button(label=emoji)
+                button.set_size_request(20, 20)
+                button.get_child().set_markup(f"<span font='15'>{emoji}</span>")
+                button.connect("clicked", self.on_emoji_clicked, emoji)
 
-            if index == 0:
-                first_button = button
+                row = index // 5  # integer division to get the row
+                col = index % 5   # modulus to get the column
 
-        # Then add the grid to your container, e.g.:
-        box.pack_start(grid, True, True, 0)
+                grid.attach(button, col, row, 1, 1)
 
-        # After adding to the UI:
-        if first_button:
-            first_button.grab_focus()
+                if index == 0:
+                    first_button = button
 
-        self.connect("destroy", Gtk.main_quit)
+            # Then add the grid to your container, e.g.:
+            box.pack_start(grid, True, True, 0)
+
+            # After adding to the UI:
+            if first_button:
+                first_button.grab_focus()
+
+            self.connect("destroy", Gtk.main_quit)
 
     def on_emoji_clicked(self, widget, emoji):
         self.ignore_focus = True  # Temporarily ignore focus out
@@ -106,7 +99,19 @@ class EmojiPopup(Gtk.Window):
         subprocess.run(["xdotool", "key", "Return"])
 
         subprocess.run(["xdotool", "key", "alt+Tab"])
-        # subprocess.run(["xdotool", "key", "Super+semicolon"])
+        try:
+            with open(self.emoji_path, "r", encoding="utf-8") as f:
+                emojis = [line.strip() for line in f if line.strip()]
+
+            if emoji in emojis:
+                emojis.remove(emoji)
+            emojis.insert(0, emoji)
+
+            with open(self.emoji_path, "w", encoding="utf-8") as f:
+                for e in emojis:
+                    f.write(e + "\n")
+        except Exception as e:
+            logging.error(f"Error updating emoji file: {e}")
 
 
     def on_focus_in(self, widget, event):
