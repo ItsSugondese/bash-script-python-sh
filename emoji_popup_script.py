@@ -87,7 +87,6 @@ class EmojiPopup(Gtk.Window):
 
     def on_emoji_clicked(self, widget, emoji, keyval=None):
         self.ignore_focus = True  # Temporarily ignore focus out
-        logging.error(f" {keyval} is val.")
 
         # Determine how many times to type the emoji
         repeat = 1
@@ -120,7 +119,7 @@ class EmojiPopup(Gtk.Window):
             subprocess.run(["xdotool", "key", "ctrl+shift+u"])
             subprocess.run(["xdotool", "type", unicode_code])
             subprocess.run(["xdotool", "key", "Return"])
-            time.sleep(0.2)
+            time.sleep(0.1)
 
         Gtk.main_quit()  # Exit entire app after 2 seconds
         
